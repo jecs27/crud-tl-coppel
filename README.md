@@ -81,3 +81,76 @@ Este diagrama refleja mejor la arquitectura en capas y la estructura del proyect
 4. Integración con PostgreSQL mediante Functions
 5. Sistema de logging con Log4j2
 6. Manejo de seguridad y excepciones
+
+## Diagrama de Datos
+
+Este diagrama representa de forma simple las principales entidades del sistema y sus relaciones, mostrando la estructura de datos que soporta la gestión de pólizas.
+
+```mermaid
+erDiagram
+    employee {
+        SERIAL employee_id PK
+        VARCHAR first_name
+        VARCHAR last_name 
+        VARCHAR position
+    }
+    inventory {
+        VARCHAR sku PK
+        VARCHAR name
+        INTEGER quantity
+    }
+    policy {
+        SERIAL policy_id PK
+        BIGINT employee_id FK
+        VARCHAR sku FK
+        INTEGER quantity
+        TIMESTAMP date
+    }
+
+    employee ||--o{ policy : "creates"
+    inventory ||--o{ policy : "references"
+```
+
+## Diagramas de Secuencia
+Estos diagrama muestra el flujo principal de interacción entre los componentes del sistema de gestión de pólizas, ilustrando cómo se comunican las diferentes capas de la aplicación.
+
+### Diagrama de pólizas
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Frontend
+    participant API
+    participant Service
+    participant DB
+    
+    Note over Usuario,Frontend: Gestión de Pólizas
+    
+    Usuario->>Frontend: Admin de póliza
+    Frontend->>API: GET/POST/PUT /policy
+    API->>Service: Validar datos
+    Service->>DB: Ejecutar función BD
+    DB-->>Service: Resultado operación
+    Service-->>API: Respuesta
+    API-->>Frontend: Actualización UI
+    Frontend-->>Usuario: Confirmación
+```
+### Diagrama de Usuarios
+```mermaid
+sequenceDiagram
+    actor Usuario
+    participant Frontend
+    participant API
+    participant Service
+    participant DB
+    
+    Note over Usuario,Frontend: Gestión de Pólizas
+    
+    Usuario->>Frontend: Admin de Usuarios
+    Frontend->>API: GET/POST/PUT /employee
+    API->>Service: Validar datos
+    Service->>DB: Ejecutar función BD
+    DB-->>Service: Resultado operación
+    Service-->>API: Respuesta
+    API-->>Frontend: Actualización UI
+    Frontend-->>Usuario: Confirmación
+```
